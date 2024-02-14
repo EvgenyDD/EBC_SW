@@ -1,0 +1,12 @@
+.mxproject
+*.elf
+*.map
+*.lss
+*.o
+*.d
+*.exe
+*.gdbinit
+build/
+.vscode
+.gdbinit
+signer_fw_tool/signer_fw_tool*
