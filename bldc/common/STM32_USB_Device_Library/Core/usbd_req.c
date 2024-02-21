@@ -109,7 +109,7 @@ static void USBD_SetFeature(USB_OTG_CORE_HANDLE *pdev,
 static void USBD_ClrFeature(USB_OTG_CORE_HANDLE *pdev,
 							USB_SETUP_REQ *req);
 
-static uint8_t USBD_GetLen(uint8_t *buf);
+static uint8_t USBD_GetLen(const uint8_t *buf);
 /**
  * @}
  */
@@ -802,7 +802,7 @@ void USBD_CtlError(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
  * @param  unicode : Formatted string buffer (unicode)
  * @param  len : descriptor length
  */
-void USBD_GetString(uint8_t *desc, uint8_t *unicode, uint16_t *len)
+void USBD_GetString(const uint8_t *desc, uint8_t *unicode, uint16_t *len)
 {
 	uint8_t idx = 0;
 
@@ -827,7 +827,7 @@ void USBD_GetString(uint8_t *desc, uint8_t *unicode, uint16_t *len)
  * @retval string length
  */
 
-static uint8_t USBD_GetLen(uint8_t *buf)
+static uint8_t USBD_GetLen(const uint8_t *buf)
 {
 	uint8_t len = 0;
 

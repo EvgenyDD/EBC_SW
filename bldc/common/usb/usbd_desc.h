@@ -41,4 +41,6 @@ uint8_t *USBD_USR_SerialStrDescriptor(uint8_t speed, uint16_t *length);
 uint8_t *USBD_USR_ConfigStrDescriptor(uint8_t speed, uint16_t *length);
 uint8_t *USBD_USR_InterfaceStrDescriptor(uint8_t speed, uint16_t *length);
 
+uint8_t *USBD_DFU_GetCfgDesc(uint8_t speed, uint16_t *length);
+
 #endif /* __USBD_DESC_H */

@@ -269,7 +269,7 @@ typedef enum {
  */
 typedef struct {
     /** Data type syntax, as defined in CiA309-3 */
-    char* syntax;
+    const char* syntax;
     /** Data type length in bytes, 0 if size is not known */
     size_t length;
     /** Function, which reads data of specific data type from fifo buffer and

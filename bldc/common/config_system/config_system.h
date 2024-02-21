@@ -49,6 +49,8 @@ config_sts_t config_write_storage(void);
 void config_read_storage(void);
 config_sts_t config_validate(void);
 
+__attribute__((weak)) void config_entry_not_found_callback(const uint8_t *key, uint32_t data_offset, uint16_t data_length);
+
 extern config_entry_t g_device_config[];
 extern const uint32_t g_device_config_count;
 

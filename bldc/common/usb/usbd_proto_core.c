@@ -12,7 +12,6 @@
 #include <string.h>
 
 extern bool g_stay_in_boot;
-extern void delay_ms(volatile uint32_t delay_ms);
 
 #define DISC_TO_MS 100
 
@@ -29,9 +28,7 @@ extern void delay_ms(volatile uint32_t delay_ms);
 uint8_t usbd_buffer[USBD_BUF_SZ] = {0};
 uint32_t usbd_buffer_rx_sz = 0;
 
-uint8_t *USBD_DFU_GetCfgDesc(uint8_t speed, uint16_t *length);
-
-static __IO uint32_t usbd_dfu_AltSet = 0;
+static uint32_t usbd_dfu_AltSet = 0;
 static uint32_t reset_issue_cnt = 0;
 static USB_OTG_CORE_HANDLE USB_OTG_dev;
 static uint8_t fw_sts[3];

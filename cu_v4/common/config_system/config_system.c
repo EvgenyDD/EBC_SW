@@ -5,8 +5,8 @@
 
 __attribute__((weak)) void config_entry_not_found_callback(const uint8_t *key, uint32_t data_offset, uint16_t data_length) {}
 
-#define CFG_ORIGIN ((uint32_t)&__cfg_start)
-#define CFG_END ((uint32_t)&__cfg_end)
+#define CFG_ORIGIN ((uint32_t) & __cfg_start)
+#define CFG_END ((uint32_t) & __cfg_end)
 #define CFG_SIZE (CFG_END - CFG_ORIGIN)
 
 #define DATA_OFFSET 4
@@ -145,7 +145,10 @@ config_sts_t config_write_storage(void)
 
 		uint32_t old_data_size;
 		platform_flash_read(CFG_ORIGIN, (uint8_t *)&old_data_size, sizeof(old_data_size));
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wvla"
 		uint8_t buf_old_data[4 + old_data_size];
+#pragma GCC diagnostic pop
 		memset(buf_old_data, 0, sizeof(buf_old_data)); // erase buffer
 		if(4 + old_data_size <= sizeof(buf_old_data))
 		{

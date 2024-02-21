@@ -3,36 +3,7 @@
 #include "ret_mem.h"
 #include "stm32f4xx.h"
 
-extern int __preldr_start, __preldr_end;
-extern int __ldr_start, __ldr_end;
-extern int __app_start, __app_end;
-
-// void SystemInit(void)
-// {
-// FLASH->ACR |= FLASH_ACR_LATENCY_2;
-// RCC->CFGR |= RCC_CFGR_PPRE1_2;
-// RCC->CFGR |= RCC_CFGR_PLLXTPRE_HSE;
-// RCC->CR |= RCC_CR_HSEON;
-// while(!(RCC->CR & RCC_CR_HSERDY))
-// 	;
-
-// RCC->CFGR |= RCC_CFGR_PLLSRC;
-// RCC->CFGR |= RCC_CFGR_PLLMULL6;
-// RCC->CR |= RCC_CR_PLLON;
-// while(!(RCC->CR & RCC_CR_PLLRDY))
-// 	;
-
-// RCC->CFGR |= RCC_CFGR_SW_PLL;
-
-// while(!(RCC->CFGR & RCC_CFGR_SWS_PLL))
-// 	;
-
-// FLASH->ACR |= FLASH_ACR_PRFTBE;
-
-// RCC->AHBENR |= RCC_AHBENR_CRCEN;
-// }
-
-void main(void)
+__attribute__((noreturn)) void main(void)
 {
 	RCC->AHB1ENR |= RCC_AHB1ENR_CRCEN;
 

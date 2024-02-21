@@ -67,7 +67,7 @@ static bool dma_active = false;
 
 uint16_t convRGB565(uint8_t r, uint8_t g, uint8_t b);
 
-void ili9481_dma(uint16_t *data, uint32_t size)
+static void ili9481_dma(uint16_t *data, uint32_t size)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
@@ -106,7 +106,7 @@ void ili9481_dma(uint16_t *data, uint32_t size)
 	dma_active = true;
 }
 
-void ili9481_setArea(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd)
+static void ili9481_setArea(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd)
 {
 	writecommand(TFT_CASET);
 	writedata(xStart >> 8);
@@ -123,13 +123,13 @@ void ili9481_setArea(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t y
 	writecommand(TFT_RAMWR);
 }
 
-void ili9481_refresh(bool new_frame, uint8_t phase, uint16_t *data, uint32_t size)
+static void ili9481_refresh(bool new_frame, uint8_t phase, uint16_t *data, uint32_t size)
 {
 	if(new_frame) ili9481_setArea(0, 0, LCD_ILI9481_WIDTH - 1, LCD_ILI9481_HEIGHT - 1);
 	ili9481_dma(data, size);
 }
 
-void draw_pixel(uint32_t x, uint32_t y, uint16_t color)
+static void draw_pixel(uint32_t x, uint32_t y, uint16_t color)
 {
 	ili9481_setArea(x, y, x + 1, y + 1);
 	writedata(color);
@@ -269,7 +269,7 @@ uint16_t fill_data[LCD_ILI9481_WIDTH * LCD_ILI9481_HEIGHT / 4];
 static uint32_t phase = 0;
 uint8_t rc = 0;
 
-void memset_color(uint16_t *data, uint16_t color, uint32_t size_bytes)
+static void memset_color(uint16_t *data, uint16_t color, uint32_t size_bytes)
 {
 	for(uint32_t i = 0; i < size_bytes >> 1; i++)
 	{

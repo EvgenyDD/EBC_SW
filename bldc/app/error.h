@@ -15,4 +15,7 @@ enum
 #undef _F
 };
 
+void error_set(uint32_t error, bool value);
+bool error_get(uint32_t error);
+
 #endif // ERROR_H__

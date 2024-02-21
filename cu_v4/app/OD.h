@@ -16,13 +16,13 @@
 
         Created:      23/11/2020 13:00:00
         Created By:   
-        Modified:     08/01/2024 23:33:56
+        Modified:     21/02/2024 21:56:29
         Modified By:  
 
     Device Info:
         Vendor Name:  Home
         Vendor ID:    
-        Product Name: GW
+        Product Name: EBCU
         Product ID:   
 
         Description:  
@@ -55,6 +55,7 @@
 #define OD_CNT_ARR_1010 4
 #define OD_CNT_ARR_1011 4
 #define OD_CNT_ARR_1016 127
+#define OD_CNT_ARR_2000 10
 
 
 /*******************************************************************************
@@ -83,6 +84,7 @@ typedef struct {
         uint32_t UID0;
         uint32_t UID1;
         uint32_t UID2;
+        char buildTimedate[21];
     } x1018_identity;
     uint8_t x1019_synchronousCounterOverflowValue;
     struct {
@@ -155,6 +157,8 @@ typedef struct {
         uint8_t highestSub_indexSupported;
         uint32_t error;
     } x1F57_flashStatusIdentification;
+    uint8_t x2000_errorBits_sub0;
+    uint8_t x2000_errorBits[OD_CNT_ARR_2000];
     uint32_t x6000__obj0;
     uint32_t x7000__obj1;
 } OD_RAM_t;
@@ -206,8 +210,9 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1F51 &OD->list[25]
 #define OD_ENTRY_H1F56 &OD->list[26]
 #define OD_ENTRY_H1F57 &OD->list[27]
-#define OD_ENTRY_H6000 &OD->list[28]
-#define OD_ENTRY_H7000 &OD->list[29]
+#define OD_ENTRY_H2000 &OD->list[28]
+#define OD_ENTRY_H6000 &OD->list[29]
+#define OD_ENTRY_H7000 &OD->list[30]
 
 
 /*******************************************************************************
@@ -241,8 +246,9 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1F51_programControl &OD->list[25]
 #define OD_ENTRY_H1F56_appSoftIdentification &OD->list[26]
 #define OD_ENTRY_H1F57_flashStatusIdentification &OD->list[27]
-#define OD_ENTRY_H6000__obj0 &OD->list[28]
-#define OD_ENTRY_H7000__obj1 &OD->list[29]
+#define OD_ENTRY_H2000_errorBits &OD->list[28]
+#define OD_ENTRY_H6000__obj0 &OD->list[29]
+#define OD_ENTRY_H7000__obj1 &OD->list[30]
 
 
 /*******************************************************************************

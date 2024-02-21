@@ -483,11 +483,11 @@ void SAI_MonoModeConfig(SAI_Block_TypeDef* SAI_Block_x, uint32_t SAI_Mono_StreoM
 {
   /* Check the parameters */
   assert_param(IS_SAI_BLOCK_PERIPH(SAI_Block_x));
-  assert_param(IS_SAI_BLOCK_MONO_STREO_MODE(SAI_MonoMode));
+  assert_param(IS_SAI_BLOCK_MONO_STREO_MODE(SAI_Mono_StreoMode));
   /* Clear MONO bit */
   SAI_Block_x->CR1 &= ~(SAI_xCR1_MONO);
   /* Set new Mono Mode value */
-  SAI_Block_x->CR1 |= SAI_MonoMode;
+  SAI_Block_x->CR1 |= SAI_Mono_StreoMode;
 }
 
 /**
@@ -510,7 +510,7 @@ void SAI_TRIStateConfig(SAI_Block_TypeDef* SAI_Block_x, uint32_t SAI_TRIState)
   /* Clear MONO bit */
   SAI_Block_x->CR1 &= ~(SAI_xCR1_MONO);
   /* Set new Mono Mode value */
-  SAI_Block_x->CR1 |= SAI_MonoMode;  
+  SAI_Block_x->CR1 |= SAI_TRIState;  
   
 }
 

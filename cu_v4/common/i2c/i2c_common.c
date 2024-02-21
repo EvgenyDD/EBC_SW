@@ -1,3 +1,4 @@
+#include "i2c_common.h"
 #include "stm32f4xx.h"
 
 #define TIMEOUT 0xFFF
@@ -92,7 +93,7 @@ static void Clear_ADDR_FLAG(void)
 	}
 }
 
-uint8_t _I2C_GetFlagStatus(uint32_t I2C_FLAG)
+static uint8_t _I2C_GetFlagStatus(uint32_t I2C_FLAG)
 {
 	if(I2C1->SR1 & I2C_FLAG)
 	{

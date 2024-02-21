@@ -157,7 +157,11 @@ int fram_read(uint32_t addr, uint8_t *data, uint32_t size)
 {
 	if(addr + size >= FRAM_SIZE) return FRAM_ERR_ADDR_OVF;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wvla"
 	uint8_t data_tx[4 + size], data_rx[4 + size];
+#pragma GCC diagnostic pop
+
 	data_tx[0] = FRAM_CMD_READ;
 	data_tx[1] = (addr >> 16) & 0xFF;
 	data_tx[2] = (addr >> 8) & 0xFF;
@@ -176,8 +180,12 @@ int fram_write(uint32_t addr, const uint8_t *data, uint32_t size)
 {
 	if(addr + size >= FRAM_SIZE) return FRAM_ERR_ADDR_OVF;
 
-	// disable write protection
+// disable write protection
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wvla"
 	uint8_t data_tx[4 + size], data_rx[4 + size];
+#pragma GCC diagnostic pop
+
 	data_tx[0] = FRAM_CMD_WR_EN;
 	CS_L;
 	spi_trx(data_tx, data_rx, 1);

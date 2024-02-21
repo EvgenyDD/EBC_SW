@@ -19,4 +19,7 @@ enum
 
 // #define ERROR_COUNT 3
 
+void error_set(uint32_t error, bool value);
+bool error_get(uint32_t error);
+
 #endif // ERROR_H__

@@ -111,14 +111,14 @@ uint8_t usbd_str_serial[128] = {0};
 
 __ALIGN_BEGIN uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ] __ALIGN_END;
 
-static int int_to_unicode(uint32_t value, uint8_t *pbuf, uint8_t len)
+static uint32_t int_to_unicode(uint32_t value, uint8_t *pbuf, uint8_t len)
 {
 	for(uint8_t idx = 0; idx < len; idx++, value <<= 4, pbuf[2 * idx + 1] = 0)
 		pbuf[2 * idx + 0] = (value >> 28) + ((value >> 28) < 0xA ? '0' : ('A' - 10));
 	return 2 * len;
 }
 
-static int str_to_unicode(const char *s, uint8_t *pbuf)
+static uint32_t str_to_unicode(const char *s, uint8_t *pbuf)
 {
 	uint32_t idx = 0;
 	for(; *s; idx++, s++, pbuf[2 * idx + 1] = 0)
@@ -158,7 +158,7 @@ uint8_t *USBD_USR_ManufacturerStrDescriptor(uint8_t speed, uint16_t *length)
 
 uint8_t *USBD_USR_SerialStrDescriptor(uint8_t speed, uint16_t *length)
 {
-	int p = 2;
+	uint32_t p = 2;
 	p += str_to_unicode(DEV, &usbd_str_serial[p]);
 	p += str_to_unicode("_", &usbd_str_serial[p]);
 	p += int_to_unicode(g_uid[0], &usbd_str_serial[p], 8);

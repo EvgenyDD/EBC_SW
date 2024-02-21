@@ -28,11 +28,11 @@ sector_t flash_desc[] = {
 
 static int find_sector(uint32_t addr)
 {
-	for(int i = 0; i < sizeof(flash_desc) / sizeof(flash_desc[0]); i++)
+	for(uint32_t i = 0; i < sizeof(flash_desc) / sizeof(flash_desc[0]); i++)
 	{
 		if((addr >= flash_desc[i].start) && (addr < (flash_desc[i].start + flash_desc[i].len)))
 		{
-			return i;
+			return (int)i;
 		}
 	}
 	return -1;
@@ -40,7 +40,7 @@ static int find_sector(uint32_t addr)
 
 void platform_flash_erase_flag_reset(void)
 {
-	for(int i = 0; i < sizeof(flash_desc) / sizeof(flash_desc[0]); i++)
+	for(uint32_t i = 0; i < sizeof(flash_desc) / sizeof(flash_desc[0]); i++)
 	{
 		flash_desc[i].erased = false;
 	}
@@ -118,7 +118,7 @@ void platform_deinit(void)
 	__enable_irq();
 }
 
-void platform_reset(void)
+__attribute__((noreturn)) void platform_reset(void)
 {
 #if FW_TYPE == FW_APP
 	// i2c_display_clear_screen(0);

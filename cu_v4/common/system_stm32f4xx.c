@@ -49,7 +49,7 @@ uint32_t SystemCoreClock = 168000000;
 const uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 const uint8_t APBPrescTable[8] = {0, 0, 0, 0, 1, 2, 3, 4};
 
-void clock_reinit(void)
+static void clock_reinit(void)
 {
 	RCC_DeInit();
 	RCC_HSEConfig(RCC_HSE_ON);
@@ -88,7 +88,7 @@ void NMI_Handler(void)
 	clock_reinit();
 }
 
-void SystemInit_ExtMemCtl(void)
+static void SystemInit_ExtMemCtl(void)
 {
 	/* SRAM (LCD) configuration
 	 +-------------------+--------------------+------------------+------------------+

@@ -67,10 +67,8 @@ static uint8_t USBD_SOF(USB_OTG_CORE_HANDLE *pdev);
 static uint8_t USBD_Reset(USB_OTG_CORE_HANDLE *pdev);
 static uint8_t USBD_Suspend(USB_OTG_CORE_HANDLE *pdev);
 static uint8_t USBD_Resume(USB_OTG_CORE_HANDLE *pdev);
-#ifdef VBUS_SENSING_ENABLED
-static uint8_t USBD_DevConnected(USB_OTG_CORE_HANDLE *pdev);
-static uint8_t USBD_DevDisconnected(USB_OTG_CORE_HANDLE *pdev);
-#endif
+static uint8_t USBD_DevConnected(USB_OTG_CORE_HANDLE *pdev) { return 0; }
+static uint8_t USBD_DevDisconnected(USB_OTG_CORE_HANDLE *pdev) { return 0; }
 static uint8_t USBD_IsoINIncomplete(USB_OTG_CORE_HANDLE *pdev);
 static uint8_t USBD_IsoOUTIncomplete(USB_OTG_CORE_HANDLE *pdev);
 static uint8_t USBD_RunTestMode(USB_OTG_CORE_HANDLE *pdev);
@@ -95,10 +93,8 @@ USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb =
 		USBD_Resume,
 		USBD_IsoINIncomplete,
 		USBD_IsoOUTIncomplete,
-#ifdef VBUS_SENSING_ENABLED
 		USBD_DevConnected,
 		USBD_DevDisconnected,
-#endif
 };
 
 USBD_DCD_INT_cb_TypeDef *USBD_DCD_INT_fops = &USBD_DCD_INT_cb;
