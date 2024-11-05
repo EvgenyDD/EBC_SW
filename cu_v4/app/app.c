@@ -37,9 +37,9 @@ bool g_stay_in_boot = false;
 CO_t *CO = NULL;
 uint32_t g_uid[3];
 
-static uint8_t g_active_can_node_id = 1;	/* Copied from CO_pending_can_node_id in the communication reset section */
-static uint8_t pending_can_node_id = 1; /* read from dip switches or nonvolatile memory, configurable by LSS slave */
-uint16_t pending_can_baud = 500;		/* read from dip switches or nonvolatile memory, configurable by LSS slave */
+static uint8_t g_active_can_node_id = 1; /* Copied from CO_pending_can_node_id in the communication reset section */
+static uint8_t pending_can_node_id = 1;	 /* read from dip switches or nonvolatile memory, configurable by LSS slave */
+uint16_t pending_can_baud = 500;		 /* read from dip switches or nonvolatile memory, configurable by LSS slave */
 
 volatile uint64_t system_time = 0;
 

@@ -343,7 +343,7 @@ clean_foreign_targets:
 #######################################
 # FLAGS
 #######################################
-COMMON_WARN += -Wabi
+# COMMON_WARN += -Wabi
 COMMON_WARN += -Warray-bounds
 COMMON_WARN += -Wattributes
 COMMON_WARN += -Wcast-align
@@ -365,7 +365,7 @@ COMMON_WARN += -Wlogical-op
 COMMON_WARN += -Wmissing-declarations
 COMMON_WARN += -Wmissing-format-attribute
 COMMON_WARN += -Wmissing-include-dirs
-COMMON_WARN += -Wmissing-noreturn
+# COMMON_WARN += -Wmissing-noreturn
 COMMON_WARN += -Wno-attributes
 COMMON_WARN += -Wno-builtin-macro-redefined
 COMMON_WARN += -Wno-deprecated
@@ -392,7 +392,7 @@ COMMON_WARN += -Wpointer-arith
 COMMON_WARN += -Wredundant-decls
 COMMON_WARN += -Wshadow
 COMMON_WARN += -Wsign-compare
-COMMON_WARN += -Wsign-conversion
+# COMMON_WARN += -Wsign-conversion
 COMMON_WARN += -Wstack-protector
 COMMON_WARN += -Wstrict-aliasing=1
 COMMON_WARN += -Wstrict-overflow=2

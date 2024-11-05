@@ -34,6 +34,8 @@
 
 #if (CO_CONFIG_FIFO) & CO_CONFIG_FIFO_ASCII_COMMANDS
 #include <stdio.h>
+#include <sys/types.h>
+
 #include <inttypes.h>
 
 /* Non-graphical character for command delimiter */

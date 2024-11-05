@@ -165,14 +165,14 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	FILE *fw_in_file = fopen(argv[1], "r");
+	FILE *fw_in_file = fopen(argv[1], "rb");
 	if(!fw_in_file)
 	{
 		perror("[ERROR]\topen input file");
 		return 2;
 	}
 
-	FILE *fw_out_file = fopen(argv[2], "w");
+	FILE *fw_out_file = fopen(argv[2], "wb");
 	if(!fw_out_file)
 	{
 		perror("[ERROR]\topen output file");
