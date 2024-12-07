@@ -5,6 +5,7 @@
 #include "adc.h"
 #include "can_driver.h"
 #include "config_system.h"
+#include "console.h"
 #include "crc.h"
 #include "error.h"
 #include "flasher_sdo.h"
@@ -13,7 +14,8 @@
 #include "platform.h"
 #include "prof.h"
 #include "ret_mem.h"
-#include "usbd_proto_core.h"
+#include "usb_hw.h"
+#include "usbd_core_cdc.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -33,7 +35,7 @@ bool g_stay_in_boot = false;
 uint32_t g_uid[3];
 CO_t *CO = NULL;
 
-volatile uint64_t system_time = 0;
+volatile uint32_t system_time_ms = 0;
 static int32_t prev_systick = 0;
 
 uint8_t g_active_can_node_id = 127;		  /* Copied from CO_pending_can_node_id in the communication reset section */
@@ -161,7 +163,7 @@ void main(void)
 				uint32_t diff_ms = (time_diff_systick + remain_systick_ms_prev) / (SYSTICK_IN_MS);
 				remain_systick_ms_prev = (time_diff_systick + remain_systick_ms_prev) % SYSTICK_IN_MS;
 
-				system_time += diff_ms;
+				system_time_ms += diff_ms;
 
 				platform_watchdog_reset();
 
@@ -181,4 +183,9 @@ PLATFORM_RESET:
 	CO_delete(CO);
 
 	platform_reset();
+}
+
+void usbd_cdc_rx(const uint8_t *data, uint32_t size)
+{
+	console_print("#: %.*s\n", size, data);
 }

@@ -12,7 +12,7 @@
 #include "platform.h"
 #include "prof.h"
 #include "ret_mem.h"
-#include "usbd_proto_core.h"
+#include "usb_hw.h"
 
 #define BOOT_DELAY 500
 
@@ -25,8 +25,6 @@
 	 CO_NMT_ERR_ON_BUSOFF_HB |       \
 	 CO_ERR_REG_GENERIC_ERR |        \
 	 CO_ERR_REG_COMMUNICATION)
-
-volatile uint64_t system_time = 0;
 
 bool g_stay_in_boot = false;
 uint32_t g_uid[3];
@@ -163,8 +161,6 @@ void main(void)
 				boot_delay = boot_delay >= diff_ms ? boot_delay - diff_ms : 0;
 
 				usb_poll(diff_ms);
-
-				system_time += diff_ms;
 			}
 		}
 	PLATFORM_RESET:

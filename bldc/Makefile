@@ -29,7 +29,7 @@ LDFLAGS  += -Wl,--print-memory-usage
 
 EXT_LIBS +=c m nosys
 
-PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx FW_TYPE=FW_APP CFG_SYSTEM_SAVES_NON_NATIVE_DATA=1 DEV=\"EBC6_APP\"
+PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx FW_TYPE=FW_APP CFG_SYSTEM_SAVES_NON_NATIVE_DATA=1 DEV=\"EBC6\"
 PPDEFS += CO_USE_GLOBALS
 PPDEFS += CO_CONFIG_FIFO=0
 PPDEFS += CO_CONFIG_EM="CO_CONFIG_EM_PRODUCER|CO_CONFIG_EM_STATUS_BITS|CO_CONFIG_FLAG_TIMERNEXT"
@@ -48,6 +48,7 @@ PPDEFS += CO_CONFIG_SRDO=0
 PPDEFS += CO_CONFIG_SYNC="CO_CONFIG_SYNC_ENABLE|CO_CONFIG_FLAG_TIMERNEXT|CO_CONFIG_FLAG_OD_DYNAMIC"
 PPDEFS += CO_CONFIG_TIME="CO_CONFIG_TIME_ENABLE|CO_CONFIG_FLAG_OD_DYNAMIC"
 PPDEFS += CO_CONFIG_TRACE=0
+PPDEFS += USBD_CLASS_COMPOSITE_DFU_CDC
 
 INCDIR += app
 INCDIR += app/drive
@@ -57,9 +58,11 @@ INCDIR += common/CMSIS
 INCDIR += common/canopendriver
 INCDIR += common/canopennode
 INCDIR += common/config_system
+INCDIR += common/console
 INCDIR += common/crc
 INCDIR += common/flasher
 INCDIR += common/fw_header
+INCDIR += common/md5
 INCDIR += common/STM32_USB_Device_Library/Core
 INCDIR += common/STM32_USB_OTG_Driver
 INCDIR += common/STM32F4xx_StdPeriph_Driver/inc
@@ -71,9 +74,11 @@ SOURCES += $(call rwildcard, common/CMSIS, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/canopendriver, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/canopennode, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/config_system, *.c *.S *.s)
+SOURCES += $(call rwildcard, common/console, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/crc, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/flasher, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/fw_header, *.c *.S *.s)
+SOURCES += $(call rwildcard, common/md5, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/STM32_USB_Device_Library/Core, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/STM32_USB_OTG_Driver, *.c *.S *.s)
 SOURCES += $(call rwildcard, common/STM32F4xx_StdPeriph_Driver, *.c *.S *.s)
@@ -131,11 +136,11 @@ clean_ext_targets:
 flash: $(BINARY_SIGNED)
 	openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08020000 verify reset exit" 
 
-flash_full: $(BINARY_MERGED)
+flash_all: $(BINARY_MERGED)
 	openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08000000 verify reset exit"
 
 program: $(BINARY_SIGNED)
-	@usb_dfu_flasher $< EBC6
+	@usb_dfu_flasher w a $< EBC6
 
 debug:
 	@echo "file $(EXECUTABLE)" > .gdbinit

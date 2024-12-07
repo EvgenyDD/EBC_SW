@@ -185,6 +185,9 @@ typedef struct _Device_TypeDef
 	uint8_t *(*GetSerialStrDescriptor)(uint8_t speed, uint16_t *length);
 	uint8_t *(*GetConfigurationStrDescriptor)(uint8_t speed, uint16_t *length);
 	uint8_t *(*GetInterfaceStrDescriptor)(uint8_t speed, uint16_t *length);
+	uint8_t *(*GetOSStrDescriptor)(uint8_t speed, uint16_t *length);
+	uint8_t *(*GetExtPropertiesFeatureDescriptor)(uint8_t speed, uint16_t *length);
+	uint8_t *(*GetExtCompatIDFeatureDescriptor)(uint8_t speed, uint16_t *length);
 
 #if(USBD_LPM_ENABLED == 1)
 	uint8_t *(*GetBOSDescriptor)(uint8_t speed, uint16_t *length);

@@ -55,6 +55,6 @@ extern int __app_start, __app_end;
 extern int __header_offset;
 
 extern uint32_t g_uid[3];
-extern volatile uint64_t system_time;
+extern volatile uint32_t system_time_ms;
 
 #endif // PLATFORM_H

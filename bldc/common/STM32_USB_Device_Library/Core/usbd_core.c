@@ -82,19 +82,18 @@ static uint8_t USBD_RunTestMode(USB_OTG_CORE_HANDLE *pdev);
 
 __IO USB_OTG_DCTL_TypeDef SET_TEST_MODE;
 
-USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb =
-	{
-		USBD_DataOutStage,
-		USBD_DataInStage,
-		USBD_SetupStage,
-		USBD_SOF,
-		USBD_Reset,
-		USBD_Suspend,
-		USBD_Resume,
-		USBD_IsoINIncomplete,
-		USBD_IsoOUTIncomplete,
-		USBD_DevConnected,
-		USBD_DevDisconnected,
+USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb = {
+	USBD_DataOutStage,
+	USBD_DataInStage,
+	USBD_SetupStage,
+	USBD_SOF,
+	USBD_Reset,
+	USBD_Suspend,
+	USBD_Resume,
+	USBD_IsoINIncomplete,
+	USBD_IsoOUTIncomplete,
+	USBD_DevConnected,
+	USBD_DevDisconnected,
 };
 
 USBD_DCD_INT_cb_TypeDef *USBD_DCD_INT_fops = &USBD_DCD_INT_cb;
@@ -155,23 +154,35 @@ static uint8_t USBD_SetupStage(USB_OTG_CORE_HANDLE *pdev)
 
 	USBD_ParseSetupRequest(pdev, &req);
 
-	switch(req.bmRequest & 0x1F)
+	switch(req.bmRequest & USB_REQ_TYPE_MASK)
 	{
-	case USB_REQ_RECIPIENT_DEVICE:
-		USBD_StdDevReq(pdev, &req);
+	case USB_REQ_TYPE_STANDARD:
+	case USB_REQ_TYPE_CLASS:
+		switch(req.bmRequest & 0x1F)
+		{
+		case USB_REQ_RECIPIENT_DEVICE:
+			USBD_StdDevReq(pdev, &req);
+			break;
+
+		case USB_REQ_RECIPIENT_INTERFACE:
+			USBD_StdItfReq(pdev, &req);
+			break;
+
+		case USB_REQ_RECIPIENT_ENDPOINT:
+			USBD_StdEPReq(pdev, &req);
+			break;
+
+		default:
+			DCD_EP_Stall(pdev, req.bmRequest & 0x80);
+			break;
+		}
 		break;
 
-	case USB_REQ_RECIPIENT_INTERFACE:
-		USBD_StdItfReq(pdev, &req);
+	case USB_REQ_TYPE_VENDOR:
+		USBD_VendDevReq(pdev, &req);
 		break;
 
-	case USB_REQ_RECIPIENT_ENDPOINT:
-		USBD_StdEPReq(pdev, &req);
-		break;
-
-	default:
-		DCD_EP_Stall(pdev, req.bmRequest & 0x80);
-		break;
+	default: break;
 	}
 	return USBD_OK;
 }
@@ -213,15 +224,18 @@ static uint8_t USBD_DataOutStage(USB_OTG_CORE_HANDLE *pdev, uint8_t epnum)
 				{
 					sts = pdev->dev.class_cb->EP0_RxReady(pdev);
 				}
-				if(sts)
+				if(sts != USBD_POSTPONE)
 				{
-					DCD_EP_Stall(pdev, 0x80);
-					DCD_EP_Stall(pdev, 0);
-					USB_OTG_EP0_OutStart(pdev);
-				}
-				else
-				{
-					USBD_CtlSendStatus(pdev);
+					if(sts)
+					{
+						DCD_EP_Stall(pdev, 0x80);
+						DCD_EP_Stall(pdev, 0);
+						USB_OTG_EP0_OutStart(pdev);
+					}
+					else
+					{
+						USBD_CtlSendStatus(pdev);
+					}
 				}
 			}
 		}

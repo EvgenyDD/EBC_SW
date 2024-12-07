@@ -132,7 +132,6 @@ USBD_Status USBD_StdDevReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 	switch(req->bRequest)
 	{
 	case USB_REQ_GET_DESCRIPTOR:
-
 		USBD_GetDescriptor(pdev, req);
 		break;
 
@@ -182,7 +181,6 @@ USBD_Status USBD_StdItfReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 	switch(pdev->dev.device_status)
 	{
 	case USB_OTG_CONFIGURED:
-
 		if(LOBYTE(req->wIndex) <= USBD_ITF_MAX_NUM)
 		{
 			pdev->dev.class_cb->Setup(pdev, req);
@@ -205,6 +203,32 @@ USBD_Status USBD_StdItfReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 	return ret;
 }
 
+USBD_Status USBD_VendDevReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
+{
+	uint16_t len = 0;
+	uint8_t *pbuf = 0;
+
+	switch(req->wIndex)
+	{
+	case USB_DESC_TYPE_OS_FEATURE_EXT_PROPERTIES:
+		pbuf = pdev->dev.usr_device->GetExtCompatIDFeatureDescriptor(pdev->cfg.speed, &len);
+		break;
+
+	case USB_DESC_TYPE_OS_FEATURE_EXT_COMPAT_ID:
+		pbuf = pdev->dev.usr_device->GetExtPropertiesFeatureDescriptor(pdev->cfg.speed, &len);
+		break;
+
+	default: break;
+	}
+
+	if((len != 0) && (req->wLength != 0))
+	{
+		len = MIN(len, req->wLength);
+		USBD_CtlSendData(pdev, pbuf, len);
+	}
+	return USBD_OK;
+}
+
 /**
  * @brief  USBD_StdEPReq
  *         Handle standard usb endpoint requests
@@ -214,7 +238,6 @@ USBD_Status USBD_StdItfReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
  */
 USBD_Status USBD_StdEPReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 {
-
 	uint8_t ep_addr;
 	USBD_Status ret = USBD_OK;
 
@@ -230,7 +253,6 @@ USBD_Status USBD_StdEPReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 	switch(req->bRequest)
 	{
 	case USB_REQ_SET_FEATURE:
-
 		switch(pdev->dev.device_status)
 		{
 		case USB_OTG_ADDRESSED:
@@ -260,7 +282,6 @@ USBD_Status USBD_StdEPReq(USB_OTG_CORE_HANDLE *pdev, USB_SETUP_REQ *req)
 		break;
 
 	case USB_REQ_CLEAR_FEATURE:
-
 		switch(pdev->dev.device_status)
 		{
 		case USB_OTG_ADDRESSED:
@@ -408,6 +429,10 @@ static void USBD_GetDescriptor(USB_OTG_CORE_HANDLE *pdev,
 
 		case USBD_IDX_INTERFACE_STR:
 			pbuf = pdev->dev.usr_device->GetInterfaceStrDescriptor(pdev->cfg.speed, &len);
+			break;
+
+		case USBD_IDX_OS_STR:
+			pbuf = pdev->dev.usr_device->GetOSStrDescriptor(pdev->cfg.speed, &len);
 			break;
 
 		default:
@@ -677,7 +702,6 @@ static void USBD_GetStatus(USB_OTG_CORE_HANDLE *pdev,
 static void USBD_SetFeature(USB_OTG_CORE_HANDLE *pdev,
 							USB_SETUP_REQ *req)
 {
-
 	USB_OTG_DCTL_TypeDef dctl;
 	uint8_t test_mode = 0;
 
