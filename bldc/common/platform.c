@@ -115,17 +115,6 @@ int platform_flash_read(uint32_t addr, uint8_t *src, uint32_t sz)
 
 // ========================================================================
 
-void platform_deinit(void)
-{
-	__disable_irq();
-	SysTick->CTRL = 0;
-	for(uint32_t i = 0; i < sizeof(NVIC->ICPR) / sizeof(NVIC->ICPR[0]); i++)
-	{
-		NVIC->ICPR[i] = 0xfffffffflu;
-	}
-	__enable_irq();
-}
-
 __attribute__((noreturn)) void platform_reset(void)
 {
 #if FW_TYPE == FW_LDR
@@ -177,9 +166,39 @@ static const char *get_rst_src(void)
 	return "unknown";
 }
 
-const char *paltform_reset_cause_get(void)
+const char *platform_reset_cause_get(void)
 {
 	const char *src = get_rst_src();
 	RCC_ClearFlag();
 	return src;
+}
+
+void platform_deinit(void)
+{
+	__disable_irq();
+	SysTick->CTRL = 0;
+	for(uint32_t i = 0; i < sizeof(NVIC->ICPR) / sizeof(NVIC->ICPR[0]); i++)
+	{
+		NVIC->ICPR[i] = 0xfffffffflu;
+	}
+	__enable_irq();
+}
+
+void platform_init_loader(void)
+{
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD, ENABLE);
+
+	GPIO_InitTypeDef GPIO_InitStructure = {0};
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10; // PWM - H
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIOA->BSRRH = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10;
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15; // PWM - L
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	GPIOB->BSRRH = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 }

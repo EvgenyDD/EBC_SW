@@ -85,15 +85,20 @@ static inline float logf_fast(float a)
 void adc_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);
 
 	DMA_DeInit(DMA2_Stream0);
 	DMA_InitTypeDef DMA_InitStructure;
@@ -177,19 +182,12 @@ void adc_track(void)
 	}
 	if(++adc_buf_ptr >= SAMPLE_ACC_COUNT) adc_buf_ptr = 0;
 
-	// ina180a2
-	adc_val.i24 = buf_acc[ADC_CH_I24] * 2.5f / (4095.0f * 50.0f * 0.007f);
+	// adc_val.i24 = buf_acc[ADC_CH_I24] * 2.5f / (4095.0f * 50.0f * 0.007f);
 
-	float v = buf_acc[ADC_CH_VM24];
-	adc_val.vm24 = -4.843335089f - 0.01487126977f * v + (2.369062861E-6f) * v * v;
-
-	adc_val.vp24 = buf_acc[ADC_CH_VP24] / 4095.0f * 3.3f * (1.0f + 33.0f / 2.0f);
-	adc_val.vin = buf_acc[ADC_CH_VIN] / 4095.0f * 3.3f * (1.0f + 33.0f / 2.0f);
-
-	adc_val.t[0] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T0], NTC_COEF);
-	adc_val.t[1] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T1], NTC_COEF);
-	adc_val.t[2] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T2], NTC_COEF);
-	adc_val.t[3] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T3], NTC_COEF);
+	// adc_val.t[0] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T0], NTC_COEF);
+	// adc_val.t[1] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T1], NTC_COEF);
+	// adc_val.t[2] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T2], NTC_COEF);
+	// adc_val.t[3] = NTC_TEMP_LO_SIDE(buf_acc[ADC_CH_T3], NTC_COEF);
 
 	adc_val.t_mcu = ((float)buf_acc[ADC_CH_T_MCU] * adcVREFINTCAL / (float)buf_acc[ADC_CH_VREFINT] - adcTSCAL1) * adcTSSlopeK + 30.0f;
 }

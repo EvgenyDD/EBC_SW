@@ -23,6 +23,8 @@
 
 #define UNIQUE_ID 0x1FFF7A10
 
+void platform_init_loader(void);
+
 void platform_flash_erase_flag_reset(void);
 void platform_flash_erase_flag_reset_sect_cfg(void);
 
@@ -42,7 +44,7 @@ void delay_ms(volatile uint32_t delay_ms);
 void platform_watchdog_init(void);
 static inline void platform_watchdog_reset(void) { IWDG_ReloadCounter(); }
 
-const char *paltform_reset_cause_get(void);
+const char *platform_reset_cause_get(void);
 
 static inline bool is_emcy_btn_act(void) { return GPIOA->IDR & (1 << 8); }
 

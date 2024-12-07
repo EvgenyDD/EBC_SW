@@ -69,11 +69,7 @@ void main(void)
 	prof_init();
 	platform_watchdog_init();
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA |
-							   RCC_AHB1Periph_GPIOB |
-							   RCC_AHB1Periph_GPIOC |
-							   RCC_AHB1Periph_GPIOD,
-						   ENABLE);
+	platform_init_loader();
 
 	fw_header_check_all();
 
