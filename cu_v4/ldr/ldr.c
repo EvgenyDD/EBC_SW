@@ -13,7 +13,7 @@
 #include "platform.h"
 #include "prof.h"
 #include "ret_mem.h"
-#include "usbd_proto_core.h"
+#include "usb_hw.h"
 
 #define BOOT_DELAY 500
 
@@ -27,7 +27,7 @@
 	 CO_ERR_REG_GENERIC_ERR |        \
 	 CO_ERR_REG_COMMUNICATION)
 
-volatile uint64_t system_time = 0;
+volatile uint32_t system_time_ms = 0;
 
 bool g_stay_in_boot = false;
 uint32_t g_uid[3];
@@ -175,7 +175,7 @@ void main(void)
 
 				adc_track();
 
-				system_time += diff_ms;
+				system_time_ms += diff_ms;
 			}
 		}
 	PLATFORM_RESET:

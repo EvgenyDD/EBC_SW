@@ -45,9 +45,14 @@ typedef enum
 
 #define CONFIG_MAX_KEY_SIZE 32
 
+#define CFG_ORIGIN ((uint32_t) & __cfg_start)
+#define CFG_END ((uint32_t) & __cfg_end)
+#define CFG_SIZE (CFG_END - CFG_ORIGIN)
+
 config_sts_t config_write_storage(void);
 void config_read_storage(void);
 config_sts_t config_validate(void);
+uint32_t config_get_size(void);
 
 __attribute__((weak)) void config_entry_not_found_callback(const uint8_t *key, uint32_t data_offset, uint16_t data_length);
 

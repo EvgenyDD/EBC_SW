@@ -5,10 +5,6 @@
 
 __attribute__((weak)) void config_entry_not_found_callback(const uint8_t *key, uint32_t data_offset, uint16_t data_length) {}
 
-#define CFG_ORIGIN ((uint32_t) & __cfg_start)
-#define CFG_END ((uint32_t) & __cfg_end)
-#define CFG_SIZE (CFG_END - CFG_ORIGIN)
-
 #define DATA_OFFSET 4
 
 static bool config_valid = false;
@@ -158,7 +154,7 @@ config_sts_t config_write_storage(void)
 		// first calc (new) total size & check it will fit the FLASH
 		for(uint32_t offset_buf = 4; offset_buf < old_data_size + 4;)
 		{
-			const char *entry_name = &buf_old_data[offset_buf];
+			const char *entry_name = (const char *)&buf_old_data[offset_buf];
 			if(*entry_name == 0)
 			{
 				offset_buf++;
@@ -202,7 +198,7 @@ config_sts_t config_write_storage(void)
 		// write non-native entries
 		for(uint32_t offset_buf = 4; offset_buf < old_data_size + 4;)
 		{
-			char *entry_name = &buf_old_data[offset_buf];
+			const char *entry_name = (const char *)&buf_old_data[offset_buf];
 			if(*entry_name == 0)
 			{
 				offset_buf++;
@@ -388,4 +384,15 @@ void config_read_storage(void)
 			platform_flash_read(g_device_config[i].data_abs_address, g_device_config[i].data, g_device_config[i].size);
 		}
 	}
+}
+
+/**
+ * @brief Get config section size
+ *
+ */
+uint32_t config_get_size(void)
+{
+	uint32_t size_config;
+	platform_flash_read(CFG_ORIGIN, (uint8_t *)&size_config, sizeof(size_config));
+	return size_config + 8;
 }

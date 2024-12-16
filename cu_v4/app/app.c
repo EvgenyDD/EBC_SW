@@ -5,6 +5,7 @@
 #include "adc.h"
 #include "can_driver.h"
 #include "config_system.h"
+#include "console.h"
 #include "crc.h"
 #include "error.h"
 #include "flasher_sdo.h"
@@ -17,7 +18,8 @@
 #include "prof.h"
 #include "ret_mem.h"
 #include "rtc.h"
-#include "usbd_proto_core.h"
+#include "usb_hw.h"
+#include "usbd_core_cdc.h"
 #include <stdio.h>
 
 int gsts = -10;
@@ -41,7 +43,7 @@ static uint8_t g_active_can_node_id = 1; /* Copied from CO_pending_can_node_id i
 static uint8_t pending_can_node_id = 1;	 /* read from dip switches or nonvolatile memory, configurable by LSS slave */
 uint16_t pending_can_baud = 500;		 /* read from dip switches or nonvolatile memory, configurable by LSS slave */
 
-volatile uint64_t system_time = 0;
+volatile uint32_t system_time_ms = 0;
 
 static int32_t prev_systick = 0;
 
@@ -200,7 +202,7 @@ void main(void)
 				uint32_t diff_ms = (time_diff_systick + remain_systick_ms_prev) / (SYSTICK_IN_MS);
 				remain_systick_ms_prev = (time_diff_systick + remain_systick_ms_prev) % SYSTICK_IN_MS;
 
-				system_time += diff_ms;
+				system_time_ms += diff_ms;
 
 				platform_watchdog_reset();
 
@@ -222,4 +224,9 @@ void main(void)
 
 		// 	platform_reset();
 	}
+}
+
+void usbd_cdc_rx(const uint8_t *data, uint32_t size)
+{
+	console_cb(data, size);
 }

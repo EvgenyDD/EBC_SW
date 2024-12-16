@@ -13,7 +13,7 @@ extern CO_t *CO;
 
 static struct
 {
-	uint64_t timestamp;
+	uint32_t timestamp;
 	uint16_t ident;
 	uint16_t errorCode;
 	uint8_t errorRegister;
@@ -102,7 +102,7 @@ void co_emcy_rcv_cb(const uint16_t ident,
 					const uint8_t errorBit,
 					const uint32_t infoCode)
 {
-	emcy_stat_buffer[emcy_stat_buffer_ptr].timestamp = system_time;
+	emcy_stat_buffer[emcy_stat_buffer_ptr].timestamp = system_time_ms;
 	emcy_stat_buffer[emcy_stat_buffer_ptr].ident = ident;
 	emcy_stat_buffer[emcy_stat_buffer_ptr].errorCode = errorCode;
 	emcy_stat_buffer[emcy_stat_buffer_ptr].errorRegister = errorRegister;
