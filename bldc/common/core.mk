@@ -1,5 +1,5 @@
 #######################################
-#           VERSION 2
+#           VERSION 2.1
 # #####       Manual:             #####
 #
 # 	EXE_NAME=my_prj
@@ -358,6 +358,7 @@ COMMON_WARN += -Wformat-nonliteral
 COMMON_WARN += -Wformat-security
 COMMON_WARN += -Wformat-y2k
 COMMON_WARN += -Wformat=2
+COMMON_WARN += -Wimplicit-fallthrough
 COMMON_WARN += -Winit-self
 COMMON_WARN += -Winline
 COMMON_WARN += -Winvalid-pch
@@ -389,6 +390,7 @@ COMMON_WARN += -Wpacked
 COMMON_WARN += -Wpacked-bitfield-compat
 # COMMON_WARN += -Wpadded
 COMMON_WARN += -Wpointer-arith
+COMMON_WARN += -Wpointer-sign
 COMMON_WARN += -Wredundant-decls
 COMMON_WARN += -Wshadow
 COMMON_WARN += -Wsign-compare
@@ -404,6 +406,7 @@ COMMON_WARN += -Wsystem-headers
 COMMON_WARN += -Wunknown-pragmas
 COMMON_WARN += -Wunreachable-code
 COMMON_WARN += -Wunsafe-loop-optimizations
+COMMON_WARN += -Wunused-function
 COMMON_WARN += -Wvariadic-macros
 COMMON_WARN += -Wvla
 COMMON_WARN += -Wvolatile-register-var

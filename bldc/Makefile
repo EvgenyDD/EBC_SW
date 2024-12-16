@@ -29,7 +29,7 @@ LDFLAGS  += -Wl,--print-memory-usage
 
 EXT_LIBS +=c m nosys
 
-PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx FW_TYPE=FW_APP CFG_SYSTEM_SAVES_NON_NATIVE_DATA=1 DEV=\"EBC6\"
+PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx HSE_VALUE=12000000 FW_TYPE=FW_APP CFG_SYSTEM_SAVES_NON_NATIVE_DATA=1 DEV=\"EBC6\"
 PPDEFS += CO_USE_GLOBALS
 PPDEFS += CO_CONFIG_FIFO=0
 PPDEFS += CO_CONFIG_EM="CO_CONFIG_EM_PRODUCER|CO_CONFIG_EM_STATUS_BITS|CO_CONFIG_FLAG_TIMERNEXT"
@@ -49,6 +49,7 @@ PPDEFS += CO_CONFIG_SYNC="CO_CONFIG_SYNC_ENABLE|CO_CONFIG_FLAG_TIMERNEXT|CO_CONF
 PPDEFS += CO_CONFIG_TIME="CO_CONFIG_TIME_ENABLE|CO_CONFIG_FLAG_OD_DYNAMIC"
 PPDEFS += CO_CONFIG_TRACE=0
 PPDEFS += USBD_CLASS_COMPOSITE_DFU_CDC
+PPDEFS += DFU_READS_CFG_SECTION
 
 INCDIR += app
 INCDIR += app/drive
@@ -134,13 +135,16 @@ clean_ext_targets:
 #####################
 
 flash: $(BINARY_SIGNED)
-	openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08020000 verify reset exit" 
+	@openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08020000 verify reset exit" 
 
 flash_all: $(BINARY_MERGED)
-	openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08000000 verify reset exit"
+	@openocd -d0 -f target/stm32f4xx.cfg -c "program $< 0x08000000 verify reset exit"
 
 program: $(BINARY_SIGNED)
 	@usb_dfu_flasher w a $< EBC6
+
+ds:
+	@openocd -d0 -f ../target/stm32f4xx.cfg
 
 debug:
 	@echo "file $(EXECUTABLE)" > .gdbinit

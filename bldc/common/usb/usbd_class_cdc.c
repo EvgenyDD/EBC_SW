@@ -19,5 +19,4 @@ USBD_Class_cb_TypeDef usb_class_cb = {
 };
 
 void usb_poll(uint32_t diff_ms) {}
-void USBD_USR_DeviceSuspended(void) {}
 #endif

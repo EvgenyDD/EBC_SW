@@ -1,11 +1,12 @@
 #include "usbd_core_dfu.h"
-#include "config_system.h"
 #include "fw_header.h"
 #include "platform.h"
 #include "ret_mem.h"
-#include "usbd_core_cdc.h"
 #include "usbd_req.h"
 #include <string.h>
+#ifdef DFU_READS_CFG_SECTION
+#include "config_system.h"
+#endif
 
 extern bool g_stay_in_boot;
 
@@ -27,8 +28,8 @@ uint32_t usbd_buffer_rtx_sz = 0;
 
 static uint32_t usbd_dfu_alt_set = 0;
 static uint32_t cnt_till_reset = 0;
-static uint8_t fw_sts[3], fw_type = FW_TYPE;
-static volatile bool dl_pending = false;
+static uint8_t fw_sts[3], fw_type = FW_TYPE, fw_index_sel = 0;
+static volatile bool dl_pending = false, rx_filename_pending = false;
 static bool dwnload_was = false;
 
 static struct
@@ -39,21 +40,9 @@ static struct
 	uint32_t size;
 } upload = {0};
 
-uint8_t fw_index_sel = 0;
-
-static uint16_t wVendLength = 0;
-
 #ifdef USBD_DFU_USES_SUB_FLASHING
 dfu_app_cb_t *sub_flash_cb = {NULL};
 #endif
-
-enum
-{
-	ST_IDLE = 0,
-	ST_DWL,
-	ST_UPL,
-	ST_RX_FILENAME
-} st = 0;
 
 __ALIGN_BEGIN uint8_t usbd_dfu_cfg_desc[USB_DFU_CONFIG_DESC_SIZ] __ALIGN_END = {
 	0x09,						 // bLength: Configuration Descriptor size
@@ -133,7 +122,7 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 			if(req->wLength) // SUB FLASHING
 			{
 #ifdef USBD_DFU_USES_SUB_FLASHING
-				st = ST_RX_FILENAME;
+				rx_filename_pending = true;
 				usbd_buffer_rtx_sz = req->wLength;
 				USBD_CtlPrepareRx(pdev, usbd_buffer, req->wLength);
 #else
@@ -168,7 +157,11 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 			{
 				if(upload.pending &&
 				   upload.offset_received &&
+#ifdef DFU_READS_CFG_SECTION
 				   req->wValue < FW_COUNT + 1 &&
+#else
+				   req->wValue < FW_COUNT &&
+#endif
 				   upload.size < USBD_BUF_SZ)
 				{
 					upload.pending = upload.offset_received = false;
@@ -179,7 +172,8 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 					}
 					else
 					{
-#endif
+#endif // USBD_DFU_USES_SUB_FLASHING
+#ifdef DFU_READS_CFG_SECTION
 						if(req->wValue == FW_APP + 1)
 						{
 							if(config_validate() == CONFIG_STS_OK)
@@ -194,6 +188,7 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 							}
 						}
 						else
+#endif // DFU_READS_CFG_SECTION
 						{
 							if(g_fw_info[req->wValue].locked ||
 							   upload.offset >= g_fw_info[req->wValue].size)
@@ -249,37 +244,6 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 		}
 		break;
 
-	case USB_REQ_TYPE_VENDOR:
-		if(st != ST_IDLE)
-		{
-			USBD_CtlError(pdev, req);
-		}
-		else
-		{
-			if(req->bRequest == 0) // download
-			{
-				if(req->wLength > 0)
-				{
-					wVendLength = req->wLength;
-					if(wVendLength > sizeof(usbd_buffer))
-					{
-						USBD_CtlError(pdev, req);
-					}
-					else
-					{
-						USBD_CtlPrepareRx(pdev, usbd_buffer, wVendLength);
-						st = ST_DWL;
-					}
-				}
-			}
-			else // upload
-			{
-				USBD_CtlSendData(pdev, usbd_buffer, wVendLength);
-				st = ST_UPL;
-			}
-		}
-		break;
-
 	case USB_REQ_TYPE_STANDARD:
 		switch(req->bRequest)
 		{
@@ -316,12 +280,6 @@ uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req)
 	return USBD_OK;
 }
 
-uint8_t usbd_dfu_ep0_tx_sent(void *pdev)
-{
-	st = ST_IDLE;
-	return USBD_OK;
-}
-
 uint8_t usbd_dfu_ep0_rx_ready(void *pdev)
 {
 	if(dl_pending)
@@ -340,6 +298,7 @@ uint8_t usbd_dfu_ep0_rx_ready(void *pdev)
 		{
 #endif
 			int sts;
+#ifdef DFU_READS_CFG_SECTION
 			if(fw_index_sel == FW_APP + 1)
 			{
 				if(addr_off > CFG_END - CFG_ORIGIN || CFG_END - CFG_ORIGIN - size_to_write < addr_off)
@@ -351,6 +310,7 @@ uint8_t usbd_dfu_ep0_rx_ready(void *pdev)
 				sts = platform_flash_write(CFG_ORIGIN + addr_off, &usbd_buffer[4], size_to_write);
 			}
 			else
+#endif
 			{
 				if(addr_off > ADDR_END - ADDR_ORIGIN || ADDR_END - ADDR_ORIGIN - size_to_write < addr_off)
 				{
@@ -374,15 +334,15 @@ uint8_t usbd_dfu_ep0_rx_ready(void *pdev)
 		upload.offset_received = true;
 	}
 #ifdef USBD_DFU_USES_SUB_FLASHING
-	if(st == ST_RX_FILENAME)
+	if(rx_filename_pending)
 	{
-		st = ST_IDLE;
+		rx_filename_pending = false;
 		for(uint8_t i = 0; i < dfu_app_cb_count; i++)
 		{
 			uint32_t entry_len = strlen(dfu_app_cb[i].name);
 			if(usbd_buffer_rtx_sz == entry_len)
 			{
-				if(strncmp(usbd_buffer, dfu_app_cb[i].name, entry_len) == 0)
+				if(strncmp((const char *)usbd_buffer, dfu_app_cb[i].name, entry_len) == 0)
 				{
 					sub_flash_cb = &dfu_app_cb[i];
 					return USBD_OK;
@@ -400,7 +360,7 @@ void usbd_dfu_poll(uint32_t diff_ms)
 {
 	if(cnt_till_reset)
 	{
-		if(cnt_till_reset <= diff_ms && st == ST_IDLE)
+		if(cnt_till_reset <= diff_ms)
 		{
 			if(!dwnload_was) ret_mem_set_bl_stuck(true);
 			platform_reset();

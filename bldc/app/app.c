@@ -187,5 +187,5 @@ PLATFORM_RESET:
 
 void usbd_cdc_rx(const uint8_t *data, uint32_t size)
 {
-	console_print("#: %.*s\n", size, data);
+	console_cb(data, size);
 }

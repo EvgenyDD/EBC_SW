@@ -20,5 +20,6 @@ void md5_finalize(md5_ctx *ctx);
 void md5_step(uint32_t *buffer, uint32_t *input);
 
 void md5_string(const uint8_t *input, uint8_t *result);
+void md5_data(const uint8_t *input, uint32_t size, uint8_t *result);
 
 #endif // MD5_H__

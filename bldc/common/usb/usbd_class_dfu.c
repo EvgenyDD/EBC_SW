@@ -11,17 +11,15 @@ USBD_Class_cb_TypeDef usb_class_cb = {
 	usbd_dfu_init,
 	usbd_dfu_deinit,
 	usbd_dfu_setup,
-	usbd_dfu_ep0_tx_sent,
+	NULL,
 	usbd_dfu_ep0_rx_ready,
-	NULL, /* DataIn, */
-	NULL, /* DataOut, */
-	NULL, /* SOF */
+	NULL,
+	NULL,
+	NULL,
 	NULL,
 	NULL,
 	usbd_get_cfg_desc,
 };
 
 void usb_poll(uint32_t diff_ms) { usbd_dfu_poll(diff_ms); }
-
-void USBD_USR_DeviceSuspended(void) {}
 #endif

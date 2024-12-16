@@ -1,45 +1,15 @@
-/**
- ******************************************************************************
- * @file    usb_core.h
+/* @file    usb_core.h
  * @author  MCD Application Team
  * @version V2.2.1
  * @date    17-March-2018
  * @brief   Header of the Core Layer
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2015 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under Ultimate Liberty license
- * SLA0044, the "License"; You may not use this file except in compliance with
- * the License. You may obtain a copy of the License at:
- *                      <http://www.st.com/SLA0044>
- *
- ******************************************************************************
  */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USB_CORE_H__
 #define __USB_CORE_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "usb_conf.h"
 #include "usb_defines.h"
 #include "usb_regs.h"
-
-/** @addtogroup USB_OTG_DRIVER
- * @{
- */
-
-/** @defgroup USB_CORE
- * @brief usb otg driver core layer
- * @{
- */
-
-/** @defgroup USB_CORE_Exported_Defines
- * @{
- */
 
 #define USB_OTG_EP0_IDLE 0
 #define USB_OTG_EP0_SETUP 1
@@ -58,14 +28,8 @@
 #define USB_OTG_EP_RX_STALL 0x1000
 #define USB_OTG_EP_RX_NAK 0x2000
 #define USB_OTG_EP_RX_VALID 0x3000
-/**
- * @}
- */
-#define MAX_DATA_LENGTH 0x200
 
-/** @defgroup USB_CORE_Exported_Types
- * @{
- */
+#define MAX_DATA_LENGTH 0x200
 
 typedef enum
 {
@@ -108,7 +72,7 @@ typedef enum
 	CTRL_FAIL
 } CTRL_STATUS;
 
-typedef struct USB_OTG_hc
+typedef struct
 {
 	uint8_t dev_addr;
 	uint8_t ep_num;
@@ -126,7 +90,7 @@ typedef struct USB_OTG_hc
 	uint32_t dma_addr;
 } USB_OTG_HC, *PUSB_OTG_HC;
 
-typedef struct USB_OTG_ep
+typedef struct
 {
 	uint8_t num;
 	uint8_t is_in;
@@ -145,13 +109,9 @@ typedef struct USB_OTG_ep
 	uint32_t rem_data_len;
 	uint32_t total_data_len;
 	uint32_t ctl_data_len;
+} USB_OTG_EP, *PUSB_OTG_EP;
 
-}
-
-USB_OTG_EP,
-	*PUSB_OTG_EP;
-
-typedef struct USB_OTG_core_cfg
+typedef struct
 {
 	uint8_t host_channels;
 	uint8_t dev_endpoints;
@@ -166,7 +126,7 @@ typedef struct USB_OTG_core_cfg
 
 } USB_OTG_CORE_CFGS, *PUSB_OTG_CORE_CFGS;
 
-typedef struct usb_setup_req
+typedef struct
 {
 
 	uint8_t bmRequest;
@@ -176,7 +136,7 @@ typedef struct usb_setup_req
 	uint16_t wLength;
 } USB_SETUP_REQ;
 
-typedef struct _Device_TypeDef
+typedef struct
 {
 	uint8_t *(*GetDeviceDescriptor)(uint8_t speed, uint16_t *length);
 	uint8_t *(*GetLangIDStrDescriptor)(uint8_t speed, uint16_t *length);
@@ -194,7 +154,7 @@ typedef struct _Device_TypeDef
 #endif
 } USBD_DEVICE, *pUSBD_DEVICE;
 
-typedef struct _Device_cb
+typedef struct
 {
 	uint8_t (*Init)(void *pdev, uint8_t cfgidx);
 	uint8_t (*DeInit)(void *pdev, uint8_t cfgidx);

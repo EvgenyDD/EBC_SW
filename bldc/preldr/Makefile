@@ -28,7 +28,7 @@ LDFLAGS  += -specs=nano.specs
 LDFLAGS  += -Wl,--gc-sections
 LDFLAGS  += -Wl,--print-memory-usage
 
-PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx
+PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx HSE_VALUE=12000000
 
 INCDIR += ../common
 INCDIR += ../common/CMSIS
@@ -65,6 +65,9 @@ $(BINARY_SIGNED): $(BINARY) $(SIGN)
 flash: $(BINARY_SIGNED)
 	openocd -d0 -f ../target/stm32f4xx.cfg -c "program $< 0x08000000 verify reset exit" 
 
+ds:
+	openocd -d0 -f ../target/stm32f4xx.cfg
+	
 debug:
 	@echo "file $(EXECUTABLE)" > .gdbinit
 	@echo "set auto-load safe-path /" >> .gdbinit

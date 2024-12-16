@@ -16,7 +16,7 @@ enum
 };
 
 __ALIGN_BEGIN static uint32_t cdc_alt_set __ALIGN_END = 0;
-__ALIGN_BEGIN static uint8_t cdc_cmd_buf[CDC_CMD_PACKET_SZE] __ALIGN_END;
+__ALIGN_BEGIN static uint8_t cdc_cmd_buf[CDC_CMD_PACKET_SIZE] __ALIGN_END;
 __ALIGN_BEGIN static uint8_t cdc_rx_buf[CDC_DATA_MAX_PACKET_SIZE] __ALIGN_END; // CDC ->app
 __ALIGN_BEGIN static uint8_t cdc_tx_buf[APP_RX_DATA_SIZE] __ALIGN_END;
 static uint32_t cdc_tx_buf_len = 0;
@@ -71,6 +71,17 @@ static uint16_t vcp_ctrl(uint32_t cmd, uint8_t *data, uint32_t len)
 	return USBD_OK;
 }
 
+static void usb_cdc_rst_state(void)
+{
+	cdc_tx_buf_len = 0;
+	tx_push_ptr = 0;
+	tx_pop_ptr = 0;
+	cdc_tx_state = USB_CDC_IDLE;
+	lock_cdc_tx = false;
+	cdc_cmd = 0xFF;
+	cdc_len = 0;
+}
+
 uint8_t usbd_cdc_ep0_rx_ready(void *pdev)
 {
 	if(cdc_cmd != NO_CMD) vcp_ctrl(cdc_cmd, cdc_cmd_buf, cdc_len);
@@ -80,15 +91,11 @@ uint8_t usbd_cdc_ep0_rx_ready(void *pdev)
 
 uint8_t usbd_cdc_init(void *pdev, uint8_t cfgidx)
 {
+	usb_cdc_rst_state();
+
 	DCD_EP_Open(pdev, CDC_IN_EP, CDC_DATA_IN_PACKET_SIZE, USB_OTG_EP_BULK);
 	DCD_EP_Open(pdev, CDC_OUT_EP, CDC_DATA_OUT_PACKET_SIZE, USB_OTG_EP_BULK);
-	DCD_EP_Open(pdev, CDC_CMD_EP, CDC_CMD_PACKET_SZE, USB_OTG_EP_INT);
-
-#ifdef USBD_CLASS_COMPOSITE_DFU_CDC
-	uint8_t *pbuf = (uint8_t *)usb_device_desc;
-	pbuf[4] = USB_DEVICE_CLASS_CDC;
-	pbuf[5] = USB_DEVICE_SUBCLASS_CDC;
-#endif
+	DCD_EP_Open(pdev, CDC_CMD_EP, CDC_CMD_PACKET_SIZE, USB_OTG_EP_INT);
 
 	DCD_EP_PrepareRx(pdev, CDC_OUT_EP, cdc_rx_buf, CDC_DATA_OUT_PACKET_SIZE); /* Prepare Out endpoint to receive next packet */
 	return USBD_OK;
@@ -99,18 +106,7 @@ uint8_t usbd_cdc_deinit(void *pdev, uint8_t cfgidx)
 	DCD_EP_Close(pdev, CDC_IN_EP);
 	DCD_EP_Close(pdev, CDC_OUT_EP);
 	DCD_EP_Close(pdev, CDC_CMD_EP);
-
-	usb_cdc_restore_desc_composite();
 	return USBD_OK;
-}
-
-void usb_cdc_restore_desc_composite(void)
-{
-#ifdef USBD_CLASS_COMPOSITE_DFU_CDC
-	uint8_t *pbuf = (uint8_t *)usb_device_desc;
-	pbuf[4] = USB_DEVICE_CLASS_COMPOSITE;
-	pbuf[5] = USB_DEVICE_SUBCLASS_COMPOSITE;
-#endif
 }
 
 uint8_t usbd_cdc_setup(void *pdev, USB_SETUP_REQ *req)

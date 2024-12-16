@@ -42,12 +42,6 @@ static uint8_t usbd_dfu_cdc_setup(void *pdev, USB_SETUP_REQ *req)
 	return USBD_OK;
 }
 
-static uint8_t usbd_dfu_cdc_ep0_tx_sent(void *pdev)
-{
-	usbd_dfu_ep0_tx_sent(pdev);
-	return USBD_OK;
-}
-
 static uint8_t usbd_dfu_cdc_ep0_rx_ready(void *pdev)
 {
 	usbd_cdc_ep0_rx_ready(pdev);
@@ -62,7 +56,7 @@ USBD_Class_cb_TypeDef usb_class_cb = {
 	usbd_dfu_cdc_init,
 	usbd_dfu_cdc_deinit,
 	usbd_dfu_cdc_setup,
-	usbd_dfu_cdc_ep0_tx_sent,
+	NULL,
 	usbd_dfu_cdc_ep0_rx_ready,
 	usbd_dfu_cdc_data_in,
 	usbd_dfu_cdc_data_out,
@@ -74,5 +68,4 @@ USBD_Class_cb_TypeDef usb_class_cb = {
 
 void usb_poll(uint32_t diff_ms) { usbd_dfu_poll(diff_ms); }
 
-void USBD_USR_DeviceSuspended(void) { usb_cdc_restore_desc_composite(); }
 #endif

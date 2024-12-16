@@ -25,7 +25,6 @@ typedef struct
 
 uint8_t usbd_cdc_init(void *pdev, uint8_t cfgidx);
 uint8_t usbd_cdc_deinit(void *pdev, uint8_t cfgidx);
-void usb_cdc_restore_desc_composite(void);
 uint8_t usbd_cdc_setup(void *pdev, USB_SETUP_REQ *req);
 uint8_t usbd_cdc_data_in(void *pdev, uint8_t epnum);
 uint8_t usbd_cdc_data_out(void *pdev, uint8_t epnum);

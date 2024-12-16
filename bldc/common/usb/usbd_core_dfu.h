@@ -33,7 +33,6 @@ enum
 };
 
 uint8_t usbd_dfu_setup(void *pdev, USB_SETUP_REQ *req);
-uint8_t usbd_dfu_ep0_tx_sent(void *pdev);
 uint8_t usbd_dfu_ep0_rx_ready(void *pdev);
 void usbd_dfu_poll(uint32_t diff_ms);
 

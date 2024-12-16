@@ -157,7 +157,17 @@ void md5_string(const uint8_t *input, uint8_t *result)
 {
 	md5_ctx ctx;
 	md5_init(&ctx);
-	md5_update(&ctx, input, strlen(input));
+	md5_update(&ctx, input, strlen((const char *)input));
+	md5_finalize(&ctx);
+	memcpy(result, ctx.digest, 16);
+}
+
+// Functions that run the algorithm on the provided input and put the digest into result. The result should be able to store 16 bytes.
+void md5_data(const uint8_t *input, uint32_t size, uint8_t *result)
+{
+	md5_ctx ctx;
+	md5_init(&ctx);
+	md5_update(&ctx, input, size);
 	md5_finalize(&ctx);
 	memcpy(result, ctx.digest, 16);
 }
