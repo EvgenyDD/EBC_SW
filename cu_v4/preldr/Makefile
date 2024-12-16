@@ -28,7 +28,7 @@ LDFLAGS  += -specs=nano.specs
 LDFLAGS  += -Wl,--gc-sections
 LDFLAGS  += -Wl,--print-memory-usage
 
-PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx
+PPDEFS += USE_STDPERIPH_DRIVER STM32F40_41xxx STM32F407xx HSE_VALUE=12000000
 
 INCDIR += ../common
 INCDIR += ../common/CMSIS
